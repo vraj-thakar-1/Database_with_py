@@ -1,37 +1,30 @@
 """
-conserned with storing and retriving books from  a csv file
-you know about the format of the file
-name,author,read
+Concerned with storing and retrieving books from a database.
 """
-import sqlite3
-
-
 # functions
+from .database_connection import DatabaseConnection
+
 
 def create_book_file_initialy():
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS books (name text primary key, author text, read integer)')
-    connection.commit()
-    connection.close()
+    with DatabaseConnection("data.db") as connection:
+        cursor = connection.cursor()
+        cursor.execute('CREATE TABLE IF NOT EXISTS books (name text primary key, author text, read integer)')
 
 
 def add_book(name, author):
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    cursor.execute('INSERT INTO books VALUES(?, ?, 0)', (name, author))
-    connection.commit()
-    connection.close()
+    with DatabaseConnection("data.db") as connection:
+        cursor = connection.cursor()
+        cursor.execute('INSERT INTO books VALUES(?, ?, 0)', (name, author))
 
 
 def get_all_books():
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM books')
-    # print(cursor.fetchall()) # return list of tupel elements
-    books = [{'name': row[0], 'author': row[1], 'read': row[2]} for row in cursor.fetchall()]
-    connection.close()
-    return books;
+    with DatabaseConnection("data.db") as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM books')
+        # print(cursor.fetchall()) # return list of tupel elements
+        books = [{'name': row[0], 'author': row[1], 'read': row[2]} for row in cursor.fetchall()]
+
+        return books;
 
 
 def list_books():
@@ -61,16 +54,13 @@ def list_read_books():
 
 
 def mark_book_as_read_book(book_name):
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    cursor.execute('UPDATE books SET read=1 WHERE name=?', (book_name,))
-    connection.commit()
-    connection.close()
+    with DatabaseConnection("data.db") as connection:
+        cursor = connection.cursor()
+        cursor.execute('UPDATE books SET read=1 WHERE name=?', (book_name,))
 
 
 def delete_book(book_name):
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    cursor.execute('DELETE FROM books WHERE name=?', (book_name,))
-    connection.commit()
-    connection.close()
+    with DatabaseConnection("data.db") as connection:
+        cursor = connection.cursor()
+        cursor.execute('DELETE FROM books WHERE name=?', (book_name,))
+
