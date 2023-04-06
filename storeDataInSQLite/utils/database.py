@@ -2,22 +2,24 @@
 Concerned with storing and retrieving books from a database.
 """
 # functions
+from typing import List, Dict, Union
 from .database_connection import DatabaseConnection
 
 
-def create_book_file_initialy():
+Book =List[Dict[str, Union[str, int]]]
+def create_book_file_initialy() -> None:
     with DatabaseConnection("data.db") as connection:
         cursor = connection.cursor()
         cursor.execute('CREATE TABLE IF NOT EXISTS books (name text primary key, author text, read integer)')
 
 
-def add_book(name, author):
+def add_book(name: str, author:str) -> None:
     with DatabaseConnection("data.db") as connection:
         cursor = connection.cursor()
         cursor.execute('INSERT INTO books VALUES(?, ?, 0)', (name, author))
 
 
-def get_all_books():
+def get_all_books() -> Book:
     with DatabaseConnection("data.db") as connection:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM books')
@@ -27,7 +29,7 @@ def get_all_books():
         return books;
 
 
-def list_books():
+def list_books() -> None:
     # print list of all books
     all_books = get_all_books()
     if len(all_books) > 0:
@@ -42,7 +44,7 @@ def list_books():
         print("you have no any book yet, add first...:)")
 
 
-def list_read_books():
+def list_read_books() -> None:
     all_books = get_all_books()
     readed_books = [book for book in all_books if book['read'] == 1]
 
@@ -53,14 +55,13 @@ def list_read_books():
         print('------------------------------')
 
 
-def mark_book_as_read_book(book_name):
+def mark_book_as_read_book(book_name:str) -> None:
     with DatabaseConnection("data.db") as connection:
         cursor = connection.cursor()
         cursor.execute('UPDATE books SET read=1 WHERE name=?', (book_name,))
 
 
-def delete_book(book_name):
+def delete_book(book_name:str) -> None:
     with DatabaseConnection("data.db") as connection:
         cursor = connection.cursor()
         cursor.execute('DELETE FROM books WHERE name=?', (book_name,))
-
